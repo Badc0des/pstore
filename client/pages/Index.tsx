@@ -28,6 +28,7 @@ export default function Index() {
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState("Bendera");
   const [isDebt, setIsDebt] = useState(false);
+  const [filterCategory, setFilterCategory] = useState<string | null>(null);
 
   const addExpense = (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,6 +59,16 @@ export default function Index() {
     .filter((exp) => exp.isDebt)
     .reduce((sum, exp) => sum + exp.amount, 0);
   const netTotal = totalExpenses - totalDebt;
+
+  const filteredExpenses = filterCategory
+    ? expenses.filter((exp) => exp.category === filterCategory)
+    : expenses;
+
+  const filteredTotalExpenses = filteredExpenses.reduce((sum, exp) => sum + exp.amount, 0);
+  const filteredTotalDebt = filteredExpenses
+    .filter((exp) => exp.isDebt)
+    .reduce((sum, exp) => sum + exp.amount, 0);
+  const filteredNetTotal = filteredTotalExpenses - filteredTotalDebt;
 
   const expensesByCategory = CATEGORIES.map((cat) => {
     const categoryExpenses = expenses.filter((exp) => exp.category === cat);
@@ -176,29 +187,68 @@ export default function Index() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="bg-white rounded-xl shadow-lg p-6 border border-slate-200">
                 <p className="text-sm font-medium text-slate-600 mb-1">
-                  Total Pengeluaran
+                  Total Pengeluaran {filterCategory && `(${filterCategory})`}
                 </p>
                 <p className="text-2xl font-bold text-red-600">
-                  Rp {totalExpenses.toLocaleString("id-ID")}
+                  Rp {filteredTotalExpenses.toLocaleString("id-ID")}
                 </p>
               </div>
 
               <div className="bg-white rounded-xl shadow-lg p-6 border border-slate-200">
                 <p className="text-sm font-medium text-slate-600 mb-1">
-                  Total Hutang
+                  Total Hutang {filterCategory && `(${filterCategory})`}
                 </p>
                 <p className="text-2xl font-bold text-orange-600">
-                  Rp {totalDebt.toLocaleString("id-ID")}
+                  Rp {filteredTotalDebt.toLocaleString("id-ID")}
                 </p>
               </div>
 
               <div className="bg-white rounded-xl shadow-lg p-6 border border-slate-200">
                 <p className="text-sm font-medium text-slate-600 mb-1">
-                  Total Bersih
+                  Total Bersih {filterCategory && `(${filterCategory})`}
                 </p>
-                <p className={`text-2xl font-bold ${netTotal >= 0 ? "text-green-600" : "text-red-600"}`}>
-                  Rp {netTotal.toLocaleString("id-ID")}
+                <p className={`text-2xl font-bold ${filteredNetTotal >= 0 ? "text-green-600" : "text-red-600"}`}>
+                  Rp {filteredNetTotal.toLocaleString("id-ID")}
                 </p>
+              </div>
+            </div>
+
+            {/* Category Filter */}
+            <div className="bg-white rounded-xl shadow-lg p-6 border border-slate-200">
+              <h3 className="text-sm font-bold text-slate-900 mb-4 uppercase tracking-wide text-slate-500">
+                Filter Kategori
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => setFilterCategory(null)}
+                  className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                    filterCategory === null
+                      ? "bg-red-500 text-white shadow-lg"
+                      : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                  }`}
+                >
+                  Semua ({expenses.length})
+                </button>
+                {CATEGORIES.map((cat) => {
+                  const count = expenses.filter(
+                    (exp) => exp.category === cat
+                  ).length;
+                  return (
+                    count > 0 && (
+                      <button
+                        key={cat}
+                        onClick={() => setFilterCategory(cat)}
+                        className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                          filterCategory === cat
+                            ? "bg-red-500 text-white shadow-lg"
+                            : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                        }`}
+                      >
+                        {cat} ({count})
+                      </button>
+                    )
+                  );
+                })}
               </div>
             </div>
 
@@ -234,19 +284,25 @@ export default function Index() {
             {/* Expense List */}
             <div className="bg-white rounded-xl shadow-lg p-6 border border-slate-200">
               <h3 className="text-lg font-bold text-slate-900 mb-4">
-                Riwayat Pengeluaran
+                Riwayat Pengeluaran {filterCategory && `(${filterCategory})`}
               </h3>
 
-              {expenses.length === 0 ? (
+              {filteredExpenses.length === 0 ? (
                 <div className="text-center py-12">
-                  <p className="text-slate-500 mb-2">Belum ada pengeluaran</p>
+                  <p className="text-slate-500 mb-2">
+                    {expenses.length === 0
+                      ? "Belum ada pengeluaran"
+                      : `Tidak ada pengeluaran untuk kategori ${filterCategory}`}
+                  </p>
                   <p className="text-sm text-slate-400">
-                    Mulai dengan menambahkan pengeluaran pertama Anda
+                    {expenses.length === 0
+                      ? "Mulai dengan menambahkan pengeluaran pertama Anda"
+                      : "Coba pilih kategori lain"}
                   </p>
                 </div>
               ) : (
                 <div className="space-y-2">
-                  {expenses.map((exp) => (
+                  {filteredExpenses.map((exp) => (
                     <div
                       key={exp.id}
                       className="flex items-center justify-between py-3 px-4 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors"
