@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Trash2, Plus } from "lucide-react";
 
 interface Expense {
@@ -26,6 +26,23 @@ export default function Index() {
   const [category, setCategory] = useState("Bahan Bendera");
   const [isDebt, setIsDebt] = useState(false);
   const [filterCategory, setFilterCategory] = useState<string | null>(null);
+
+  // Load expenses from localStorage on mount
+  useEffect(() => {
+    const savedExpenses = localStorage.getItem("expenses");
+    if (savedExpenses) {
+      try {
+        setExpenses(JSON.parse(savedExpenses));
+      } catch (error) {
+        console.error("Failed to load expenses:", error);
+      }
+    }
+  }, []);
+
+  // Save expenses to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem("expenses", JSON.stringify(expenses));
+  }, [expenses]);
 
   const addExpense = (e: React.FormEvent) => {
     e.preventDefault();
