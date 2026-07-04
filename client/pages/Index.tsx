@@ -184,28 +184,28 @@ export default function Index() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="bg-white rounded-xl shadow-lg p-6 border border-slate-200">
                 <p className="text-sm font-medium text-slate-600 mb-1">
-                  Total Pengeluaran {filterCategory && `(${filterCategory})`}
+                  Total Pengeluaran
                 </p>
                 <p className="text-2xl font-bold text-red-600">
-                  Rp {filteredTotalExpenses.toLocaleString("id-ID")}
+                  Rp {totalExpenses.toLocaleString("id-ID")}
                 </p>
               </div>
 
               <div className="bg-white rounded-xl shadow-lg p-6 border border-slate-200">
                 <p className="text-sm font-medium text-slate-600 mb-1">
-                  Total Hutang {filterCategory && `(${filterCategory})`}
+                  Total Hutang
                 </p>
                 <p className="text-2xl font-bold text-orange-600">
-                  Rp {filteredTotalDebt.toLocaleString("id-ID")}
+                  Rp {totalDebt.toLocaleString("id-ID")}
                 </p>
               </div>
 
               <div className="bg-white rounded-xl shadow-lg p-6 border border-slate-200">
                 <p className="text-sm font-medium text-slate-600 mb-1">
-                  Total Bersih {filterCategory && `(${filterCategory})`}
+                  Total Bersih
                 </p>
-                <p className={`text-2xl font-bold ${filteredNetTotal >= 0 ? "text-green-600" : "text-red-600"}`}>
-                  Rp {filteredNetTotal.toLocaleString("id-ID")}
+                <p className={`text-2xl font-bold ${netTotal >= 0 ? "text-green-600" : "text-red-600"}`}>
+                  Rp {netTotal.toLocaleString("id-ID")}
                 </p>
               </div>
             </div>
