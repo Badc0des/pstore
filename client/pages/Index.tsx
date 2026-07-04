@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Trash2, Plus } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Trash2, Plus, Download, Upload } from "lucide-react";
 
 interface Expense {
   id: string;
@@ -66,6 +66,40 @@ export default function Index() {
 
   const deleteExpense = (id: string) => {
     setExpenses(expenses.filter((exp) => exp.id !== id));
+  };
+
+  const exportData = () => {
+    const dataStr = JSON.stringify(expenses, null, 2);
+    const dataBlob = new Blob([dataStr], { type: "application/json" });
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `pengeluaran-${new Date().toISOString().split("T")[0]}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const importData = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const importedData = JSON.parse(event.target?.result as string);
+        if (Array.isArray(importedData)) {
+          setExpenses(importedData);
+          alert("Data berhasil diimpor!");
+        } else {
+          alert("Format file tidak valid");
+        }
+      } catch (error) {
+        alert("Gagal membaca file");
+      }
+    };
+    reader.readAsText(file);
   };
 
   const totalExpenses = expenses.reduce((sum, exp) => sum + exp.amount, 0);
@@ -191,6 +225,34 @@ export default function Index() {
                   <Plus size={18} />
                   Tambah Pengeluaran
                 </button>
+
+                <div className="border-t border-slate-200 pt-4 mt-4 space-y-2">
+                  <button
+                    type="button"
+                    onClick={exportData}
+                    className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
+                  >
+                    <Download size={18} />
+                    Backup Data
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
+                  >
+                    <Upload size={18} />
+                    Restore Data
+                  </button>
+
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".json"
+                    onChange={importData}
+                    className="hidden"
+                  />
+                </div>
               </form>
             </div>
           </div>
