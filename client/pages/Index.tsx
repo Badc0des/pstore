@@ -11,22 +11,19 @@ interface Expense {
 }
 
 const CATEGORIES = [
-  "Bendera",
-  "Logistik",
+  "Bahan Bendera",
+  "Hutang",
+  "Alat Produksi",
+  "Iklan",
+  "Jasa Jahit",
   "Gaji Karyawan",
-  "Bahan Baku",
-  "Sewa Tempat",
-  "Listrik & Air",
-  "Marketing",
-  "Maintenance",
-  "Lainnya",
 ];
 
 export default function Index() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
-  const [category, setCategory] = useState("Bendera");
+  const [category, setCategory] = useState("Bahan Bendera");
   const [isDebt, setIsDebt] = useState(false);
   const [filterCategory, setFilterCategory] = useState<string | null>(null);
 
@@ -46,7 +43,7 @@ export default function Index() {
     setExpenses([newExpense, ...expenses]);
     setDescription("");
     setAmount("");
-    setCategory("Bendera");
+    setCategory("Bahan Bendera");
     setIsDebt(false);
   };
 
